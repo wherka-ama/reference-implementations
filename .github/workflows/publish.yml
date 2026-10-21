@@ -28,19 +28,55 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Validate collections
-        run: npm run validate -- --output-markdown validation-comment.md
+        run: npx ai-primitives-hub collection validate --verbose --markdown-path validation-comment.md
 
       - name: Validate agent skills
-        run: npm run validate:skills
+        run: npx ai-primitives-hub skill validate --verbose
 
-      - name: Publish affected collections
+      - name: Detect, Build & Publish Affected Collections
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx publish-collections
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            FILES=$(npx ai-primitives-hub collection list -o json | jq -r '.data[].file')
+          else
+            CHANGED_ARGS=()
+            while IFS= read -r path; do
+              [ -n "$path" ] && CHANGED_ARGS+=(--changed-path "$path")
+            done < <(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}")
+            if [ ${#CHANGED_ARGS[@]} -eq 0 ]; then
+              echo "No changed paths detected."
+              exit 0
+            fi
+            FILES=$(npx ai-primitives-hub collection affected "${CHANGED_ARGS[@]}" -o json | jq -r '.data.affected[].file')
+          fi
+
+          for COLLECTION_FILE in $FILES; do
+            VERSION_JSON=$(npx ai-primitives-hub version compute --collection-file "$COLLECTION_FILE" -o json)
+            COLLECTION_ID=$(echo "$VERSION_JSON" | jq -r '.data.collectionId')
+            NEXT_VERSION=$(echo "$VERSION_JSON" | jq -r '.data.nextVersion')
+            TAG=$(echo "$VERSION_JSON" | jq -r '.data.tag')
+
+            BUILD_JSON=$(npx ai-primitives-hub bundle build --collection-file "$COLLECTION_FILE" --version "$NEXT_VERSION" --out-dir "dist/$COLLECTION_ID" --repo-slug "$GITHUB_REPOSITORY" -o json)
+            MANIFEST_ASSET=$(echo "$BUILD_JSON" | jq -r '.data.manifestAsset')
+            ZIP_ASSET=$(echo "$BUILD_JSON" | jq -r '.data.zipAsset')
+            README_ASSET=$(echo "$BUILD_JSON" | jq -r '.data.readmeAsset // empty')
+
+            ASSETS=("$MANIFEST_ASSET" "$ZIP_ASSET")
+            if [ -n "$README_ASSET" ] && [ -f "$README_ASSET" ]; then
+              ASSETS+=("$README_ASSET")
+            fi
+
+            if ! gh release view "$TAG" >/dev/null 2>&1; then
+              gh release create "$TAG" "${ASSETS[@]}" --title "$TAG" --notes "Release $TAG for collection $COLLECTION_ID"
+            fi
+          done

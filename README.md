@@ -75,7 +75,7 @@ lives in reflects who stewards it, not who originally built it.
 
 ## AI Primitives Hub Collections
 
-This repository is also packaged for the **AI Primitives Hub** (`@prompt-registry/collection-scripts`), providing installable collections under [`collections/`](./collections/) that bundle the repository's skills, instructions, prompts, agents, and MCP server configuration:
+This repository is also packaged for the **AI Primitives Hub** (`@ai-primitives-hub/cli`), providing installable collections under [`collections/`](./collections/) that bundle the repository's skills, instructions, prompts, agents, and MCP server configuration:
 
 | Collection ID | Manifest | Description |
 |---|---|---|

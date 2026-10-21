@@ -43,14 +43,14 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Validate collections
-        run: npm run validate -- --output-markdown validation-comment.md
+        run: npx ai-primitives-hub collection validate --verbose --markdown-path validation-comment.md
 
       - name: Validate agent skills
-        run: npm run validate:skills
+        run: npx ai-primitives-hub skill validate --verbose
