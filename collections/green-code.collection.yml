@@ -1,0 +1,45 @@
+id: green-code
+name: Green Software Coding & Review
+description: Apply 40+ Green Software Foundation (GSF) patterns and Software Carbon Intensity (SCI) principles when generating or reviewing web, cloud, data, AI/ML, and agentic code.
+version: 1.0.0
+author: Green Software Foundation
+tags:
+  - green-software
+  - sustainability
+  - sci
+  - code-review
+  - energy-efficiency
+  - carbon-footprint
+readme:
+  path: docs/collections/green-code.md
+items:
+  - path: skills/green-code-skill/SKILL.md
+    kind: skill
+    title: Green Code Skill
+    description: Generate and review code against 40+ GSF Development, Architecture, AI/ML, and Agentic AI patterns mapped to the SCI formula.
+    tags: [green-software, sci, code-review, patterns]
+  - path: instructions/green-software-standards.instructions.md
+    kind: instruction
+    title: Green Software Engineering Standards
+    description: Portable coding and architectural guidelines grounded in the SCI specification and GSF pattern catalog.
+    tags: [standards, sci, green-coding]
+  - path: prompts/green-code-review.prompt.md
+    kind: prompt
+    title: Green Software Code Review
+    description: Audit code or architecture designs against GSF patterns with severity-ranked findings and SCI impact analysis.
+    tags: [review, audit, sci]
+  - path: prompts/green-code-generation.prompt.md
+    kind: prompt
+    title: Green Software Code Generation
+    description: Generate code with GSF patterns applied by default and an SCI-mapped Green Notes block.
+    tags: [generation, green-notes, sci]
+  - path: agents/green-software-advisor.agent.md
+    kind: agent
+    title: Green Software Advisor
+    description: Specialist advisor agent for sustainable software design, refactoring, and code review.
+    tags: [advisor, green-software, architecture]
+display:
+  color: "#2E7D32"
+  icon: leaf
+  ordering: manual
+  show_badge: true

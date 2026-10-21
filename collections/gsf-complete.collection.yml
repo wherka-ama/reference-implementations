@@ -1,0 +1,95 @@
+id: gsf-complete
+name: Green Software Foundation Complete Suite
+description: Complete suite of Green Software Foundation skills, instructions, prompts, agents, and MCP sustainability telemetry for green coding and SCI for AI engineering.
+version: 1.0.0
+author: Green Software Foundation
+tags:
+  - green-software
+  - sci
+  - sci-for-ai
+  - agentic-ai
+  - mcp
+  - sustainability
+readme:
+  path: docs/collections/gsf-complete.md
+items:
+  - path: skills/green-code-skill/SKILL.md
+    kind: skill
+    title: Green Code Skill
+    description: Generate and review code against 40+ GSF Development, Architecture, AI/ML, and Agentic AI patterns mapped to the SCI formula.
+    tags: [green-software, sci, code-review, patterns]
+  - path: skills/sci-for-ai/SKILL.md
+    kind: skill
+    title: SCI for AI & Sustainable Agentic Workloads Skill
+    description: Apply the SCI for AI specification, prompt compression rules, MCP sustainability telemetry, and agentic context loop reduction levers.
+    tags: [sci-for-ai, mcp, agentic-ai, llm]
+  - path: instructions/green-software-standards.instructions.md
+    kind: instruction
+    title: Green Software Engineering Standards
+    description: Portable coding and architectural guidelines grounded in the SCI specification and GSF pattern catalog.
+    tags: [standards, sci, green-coding]
+  - path: instructions/sci-for-ai-methodology.instructions.md
+    kind: instruction
+    title: SCI for AI & MCP Sustainability Methodology
+    description: Conventions for SCI calculation, measured vs. estimated energy labeling, prompt compression, and MCP _meta disclosures.
+    tags: [sci-for-ai, methodology, mcp]
+  - path: prompts/green-code-review.prompt.md
+    kind: prompt
+    title: Green Software Code Review
+    description: Audit code or architecture designs against GSF patterns with severity-ranked findings and SCI impact analysis.
+    tags: [review, audit, sci]
+  - path: prompts/green-code-generation.prompt.md
+    kind: prompt
+    title: Green Software Code Generation
+    description: Generate code with GSF patterns applied by default and an SCI-mapped Green Notes block.
+    tags: [generation, green-notes, sci]
+  - path: prompts/sustainability-analysis-plan.prompt.md
+    kind: prompt
+    title: Technical Sustainability Analysis Plan & Report
+    description: Token-optimized sustainability planner and technical report generator across the three GSF pillars.
+    tags: [planner, report, prompt-optimization]
+  - path: prompts/agentic-workload-impact-assessment.prompt.md
+    kind: prompt
+    title: Agentic Workload Impact Assessment
+    description: Analyze compounding context loops in single-agent and multi-agent systems and apply ordered green reduction levers.
+    tags: [agentic-ai, context-loop, optimization]
+  - path: agents/green-software-advisor.agent.md
+    kind: agent
+    title: Green Software Advisor
+    description: Specialist advisor agent for sustainable software design, refactoring, and code review.
+    tags: [advisor, green-software, architecture]
+  - path: agents/sci-ai-architect.agent.md
+    kind: agent
+    title: SCI for AI Systems Architect
+    description: Specialist architect for LLM inference measurement, MCP sustainability telemetry, and low-carbon agentic workflows.
+    tags: [architect, sci-for-ai, mcp, agentic-ai]
+mcp:
+  inputs:
+    - id: sciRegion
+      type: pickString
+      description: Deployment grid region for location-based carbon intensity (I)
+      options:
+        - europe-north1
+        - us-west1
+        - europe-west1
+        - asia-southeast1
+        - us-central1
+        - world-average
+        - asia-south1
+      default: europe-north1
+  items:
+    mcp-sci:
+      type: stdio
+      command: python3
+      args:
+        - "-m"
+        - "mcp_sci.server"
+      env:
+        SCI_REGION: "${input:sciRegion}"
+      disabled: false
+      description: Reference MCP server exposing GSF SCI for AI disclosures on tools/list and per-call attributions on tools/call via foundation.greensoftware/sustainability.
+display:
+  color: "#1B5E20"
+  icon: globe
+  ordering: manual
+  show_badge: true
