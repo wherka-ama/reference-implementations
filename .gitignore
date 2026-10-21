@@ -25,6 +25,8 @@ env/
 
 # Node (in case future tools use it)
 node_modules/
+validation-comment.md
+prompt-registry.local.lock.json
 
 # OS / editor
 .DS_Store

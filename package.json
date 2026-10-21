@@ -1,0 +1,26 @@
+{
+  "name": "gsf-reference-implementations-collections",
+  "version": "1.0.0",
+  "description": "Green Software Foundation Reference Implementations — AI Primitives Hub Collections and Skills",
+  "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Green-Software-Foundation/reference-implementations.git"
+  },
+  "scripts": {
+    "validate": "validate-collections",
+    "validate:verbose": "validate-collections --verbose",
+    "validate:skills": "validate-skills",
+    "build-collection-bundle": "build-collection-bundle",
+    "publish-collections": "publish-collections",
+    "list-collections": "list-collections",
+    "compute-collection-version": "compute-collection-version",
+    "skill:create": "create-skill",
+    "build": "build-collection-bundle",
+    "publish": "publish-collections"
+  },
+  "devDependencies": {
+    "@prompt-registry/collection-scripts": "^1.0.6"
+  }
+}

@@ -1,0 +1,70 @@
+id: sci-for-ai
+name: SCI for AI & Sustainable Agentic Workloads
+description: Measure, model, and reduce the carbon, energy, and cost footprint of LLM inference pipelines, MCP servers, and multi-agent AI workloads using the GSF SCI for AI specification.
+version: 1.0.0
+author: Green Software Foundation
+tags:
+  - sci-for-ai
+  - agentic-ai
+  - llm-inference
+  - mcp
+  - sustainability
+  - carbon-accounting
+readme:
+  path: docs/collections/sci-for-ai.md
+items:
+  - path: skills/sci-for-ai/SKILL.md
+    kind: skill
+    title: SCI for AI & Sustainable Agentic Workloads Skill
+    description: Apply the SCI for AI specification, prompt compression rules, MCP sustainability telemetry, and agentic context loop reduction levers.
+    tags: [sci-for-ai, mcp, agentic-ai, llm]
+  - path: instructions/sci-for-ai-methodology.instructions.md
+    kind: instruction
+    title: SCI for AI & MCP Sustainability Methodology
+    description: Conventions for SCI calculation, measured vs. estimated energy labeling, prompt compression, and MCP _meta disclosures.
+    tags: [sci-for-ai, methodology, mcp]
+  - path: prompts/sustainability-analysis-plan.prompt.md
+    kind: prompt
+    title: Technical Sustainability Analysis Plan & Report
+    description: Token-optimized sustainability planner and technical report generator across the three GSF pillars.
+    tags: [planner, report, prompt-optimization]
+  - path: prompts/agentic-workload-impact-assessment.prompt.md
+    kind: prompt
+    title: Agentic Workload Impact Assessment
+    description: Analyze compounding context loops in single-agent and multi-agent systems and apply ordered green reduction levers.
+    tags: [agentic-ai, context-loop, optimization]
+  - path: agents/sci-ai-architect.agent.md
+    kind: agent
+    title: SCI for AI Systems Architect
+    description: Specialist architect for LLM inference measurement, MCP sustainability telemetry, and low-carbon agentic workflows.
+    tags: [architect, sci-for-ai, mcp, agentic-ai]
+mcp:
+  inputs:
+    - id: sciRegion
+      type: pickString
+      description: Deployment grid region for location-based carbon intensity (I)
+      options:
+        - europe-north1
+        - us-west1
+        - europe-west1
+        - asia-southeast1
+        - us-central1
+        - world-average
+        - asia-south1
+      default: europe-north1
+  items:
+    mcp-sci:
+      type: stdio
+      command: python3
+      args:
+        - "-m"
+        - "mcp_sci.server"
+      env:
+        SCI_REGION: "${input:sciRegion}"
+      disabled: false
+      description: Reference MCP server exposing GSF SCI for AI disclosures on tools/list and per-call attributions on tools/call via foundation.greensoftware/sustainability.
+display:
+  color: "#1565C0"
+  icon: pulse
+  ordering: manual
+  show_badge: true

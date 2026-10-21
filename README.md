@@ -73,6 +73,16 @@ lives in reflects who stewards it, not who originally built it.
 | [agentic-ai-impact-explorer](https://github.com/Green-Software-Foundation/reference-implementations/tree/main/tools/gsf/agentic-ai-impact-explorer) | An interactive educational simulator for cost, energy, carbon, and water impact of agentic LLM workloads with reduction levers mapped to green software patterns | Tools | GSF |
 | [mcp-sci](./tools/gsf/mcp-sci/) | [SCI for AI](https://sci-for-ai.greensoftware.foundation/) metrics exposed through the Model Context Protocol via an MCP extension | Tools | GSF |
 
+## AI Primitives Hub Collections
+
+This repository is also packaged for the **AI Primitives Hub** (`@prompt-registry/collection-scripts`), providing installable collections under [`collections/`](./collections/) that bundle the repository's skills, instructions, prompts, agents, and MCP server configuration:
+
+| Collection ID | Manifest | Description |
+|---|---|---|
+| `green-code` | [`collections/green-code.collection.yml`](./collections/green-code.collection.yml) | Green Software Coding & Review (`green-code-skill`, standards instructions, review/generation prompts, and Green Software Advisor agent) |
+| `sci-for-ai` | [`collections/sci-for-ai.collection.yml`](./collections/sci-for-ai.collection.yml) | SCI for AI & Sustainable Agentic Workloads (`sci-for-ai` skill, methodology instructions, sustainability planner & agentic workload prompts, SCI AI Architect agent, and `mcp-sci` MCP server) |
+| `gsf-complete` | [`collections/gsf-complete.collection.yml`](./collections/gsf-complete.collection.yml) | Complete Green Software Foundation suite combining all skills, instructions, prompts, agents, and the `mcp-sci` MCP server |
+
 ## Contributing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for the contribution process,

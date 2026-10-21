@@ -1,0 +1,46 @@
+name: Publish Collections
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'collections/**'
+      - 'skills/**'
+      - 'instructions/**'
+      - 'prompts/**'
+      - 'agents/**'
+      - 'docs/collections/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    name: Validate, Build & Publish Affected Collections
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate collections
+        run: npm run validate -- --output-markdown validation-comment.md
+
+      - name: Validate agent skills
+        run: npm run validate:skills
+
+      - name: Publish affected collections
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx publish-collections

@@ -51,7 +51,9 @@ that practitioners can read, run, and adapt to their own context.
 
 ### Maintained by GSF (`gsf/`)
 
-No GSF-maintained tools have been published in this directory yet.
+- **[green-code-skill](./gsf/green-code-skill/)** — Agent skill and portable instructions applying 40+ GSF Development, Architecture, AI/ML, and Agentic AI patterns mapped to the SCI formula during code generation and code review.
+- **[agentic-ai-impact-explorer](./gsf/agentic-ai-impact-explorer/)** — Interactive simulator for cost, energy, carbon, and water impact of single-agent and multi-agent LLM workloads with reduction levers mapped to green software patterns.
+- **[mcp-sci](./gsf/mcp-sci/)** — Reference implementation carrying SCI for AI disclosures and per-call attributions over the Model Context Protocol (`foundation.greensoftware/sustainability`).
 
 ### Maintained by the community (`community/`)
 
