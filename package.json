@@ -1,0 +1,12 @@
+{
+  "name": "gsf-skill-evaluation-experiment",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test evals/evaluation.test.mjs",
+    "eval:plan": "node evals/run.mjs",
+    "eval:live": "node evals/run.mjs --live"
+  }
+}

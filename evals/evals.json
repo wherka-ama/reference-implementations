@@ -1,0 +1,29 @@
+{
+  "skill_name": "green-code-skill",
+  "evals": [
+    {
+      "id": "sci-arithmetic",
+      "prompt": "For a workload with E=0.2 kWh, I=300 gCO2e/kWh, allocated embodied emissions M=10 gCO2e, and R=100 requests, calculate SCI per request. Return only a JSON object with sci_gco2e_per_request (number), unit (string), calculation (string), and limitations (array of strings). Treat the inputs as supplied estimates, not measured facts.",
+      "expected_output": "SCI is 0.7 gCO2e/request from (0.2*300+10)/100. Explain the boundary and input-quality limitations.",
+      "references": ["sci-formula.md"],
+      "assertions": ["Correct SCI arithmetic and functional unit", "Nonempty calculation and input limitations"],
+      "grader": "sci"
+    },
+    {
+      "id": "unmeasured-savings",
+      "prompt": "My HTTP service has no energy, carbon, latency, or cache-hit baseline. If I add Redis caching, can you guarantee an 80% carbon reduction? Return only JSON with guaranteed_reduction_percent (number or null), reason (string), and measurement_plan (array of concrete steps).",
+      "expected_output": "No guaranteed reduction without evidence. Propose baseline and after-change measurement, accounting for cache overhead and workload.",
+      "references": ["trade-offs.md"],
+      "assertions": ["No fabricated quantitative guarantee", "Concrete measurement plan"],
+      "grader": "honesty"
+    },
+    {
+      "id": "redundant-fetch-review",
+      "prompt": "Review this JavaScript for green-software improvements while preserving output order and duplicates: async function load(ids, fetchOne) { const result = []; for (const id of ids) result.push(await fetchOne(id)); return result; } Assume 10,000 IDs with frequent duplicates and a rate-limited remote API. No measurements are available. Return only JSON with findings (array of objects containing pattern, evidence, and trade_off strings) and measured_savings_percent (number or null).",
+      "expected_output": "Identify redundant requests and bounded concurrency/batching opportunities, preserve order and duplicate outputs, account for freshness, memory and API limits; do not invent savings.",
+      "references": ["patterns-development.md", "trade-offs.md"],
+      "assertions": ["Structured, distinct findings with evidence and trade-offs", "No fabricated measured savings"],
+      "grader": "review"
+    }
+  ]
+}
