@@ -25,6 +25,12 @@ Both paths are described below.
 
 ### Step 1 — Decide where it belongs
 
+On this experimental branch, the GSF-maintained skill is packaged under
+[`green-software/skills/green-code-skill/`](./green-software/skills/green-code-skill/).
+[`green-software/`](./green-software/) is a self-contained Agent Plugins 1.0.0
+package; other tools retain the categories below. See
+[`EXPERIMENT.md`](./EXPERIMENT.md) for the plugin's scope and compatibility limits.
+
 The repository has two top-level categories:
 
 - **`specifications/<spec-name>/`** for implementations of GSF

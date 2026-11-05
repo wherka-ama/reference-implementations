@@ -36,3 +36,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Downloaded schema used by this experiment's development validator
+.cache/

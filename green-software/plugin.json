@@ -1,0 +1,9 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "green-software",
+  "version": "0.1.0",
+  "description": "GSF green software coding and review skills",
+  "author": {
+    "name": "Green Software Foundation"
+  }
+}
