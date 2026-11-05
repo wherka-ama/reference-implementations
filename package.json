@@ -1,0 +1,13 @@
+{
+  "name": "gsf-hub-overlay-experiment",
+  "version": "0.1.0",
+  "private": true,
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "validate": "validate-collections",
+    "build": "node scripts/build-collection.cjs"
+  },
+  "devDependencies": {
+    "@prompt-registry/collection-scripts": "1.0.6"
+  }
+}

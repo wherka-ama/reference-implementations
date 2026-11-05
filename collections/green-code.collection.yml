@@ -1,0 +1,11 @@
+id: green-code
+name: Green Code
+description: Green software generation and review using the existing GSF skill.
+version: 0.1.0
+author: Green Software Foundation
+tags: [green-software, sustainability, skills]
+items:
+  - path: tools/gsf/green-code-skill/SKILL.md
+    kind: skill
+readme:
+  path: tools/gsf/green-code-skill/README.md
