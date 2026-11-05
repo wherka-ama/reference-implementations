@@ -153,3 +153,51 @@ repository files. Revert experiment commits if the POC is later adopted.
 
 Installed CLI help was checked as well; current website documentation can differ
 from the installed version. Actual execution outcomes are recorded below.
+
+## Executed outcomes (2026-11-05)
+
+- Offline grader/adapter/budget tests: 8 passed. Plan mode makes zero model
+  calls. The PR workflow runs only these offline checks and plan generation.
+- The approved live run reserved **13 CLI invocations**: 12 completed model
+  responses and one Kiro authentication failure. No automatic retries occurred.
+  Internal model-request count and billed dollars are not exposed consistently
+  by these adapters and remain unknown; confirmed account-side limits apply.
+- Installed clients: Copilot 1.0.105, Devin 3000.11.234, Kiro 2.8.1.
+
+| CLI | Baseline checks | With-skill checks | Baseline median wall time | With-skill median wall time |
+| --- | --- | --- | --- | --- |
+| Copilot | 3/3 pass | 3/3 pass | 8.609 s | 9.200 s |
+| Devin | 3/3 pass | 3/3 pass | 22.269 s | 11.713 s |
+| Kiro | Not evaluated | Not evaluated | Not available | Not available |
+
+These are three different tasks per arm, one trial each, with unpinned CLI
+model defaults and shared user profiles. The timings are descriptive only.
+They do **not** prove a speedup, a quality improvement, energy savings, or a
+causal effect of the skill. Both baselines already saturate the mechanical
+checks; harder discriminating tasks are needed.
+
+All twelve outputs were inspected. Both arms correctly calculated 0.7
+gCO2e/request and refused to guarantee 80% savings without measurements. The
+with-skill SCI answers explicitly discussed consistent system boundaries.
+Review answers considered duplicate reads and bounded concurrency; Devin's
+with-skill answer additionally distinguished concurrency from rate limits and
+noted shared-reference and failure-semantics changes from caching. These are
+qualitative observations, not independently blinded human scores. No generated
+implementation was executed, so runtime behavioral correctness is not proven.
+
+Kiro reported: `Not logged in. Set the KIRO_API_KEY environment variable or run
+kiro-cli login first.` The user explicitly chose to leave Kiro blocked. Its
+transport error is not counted as a skill-quality failure or latency sample.
+After authenticating, run just `--providers kiro` with renewed budget approval;
+do not rerun already completed providers unnecessarily.
+
+Raw public-fixture answers, failure details, timings, and the budget ledger
+remain in the ignored `evaluation-results/` directory. The first run's source
+revision is recorded in its report; aggregation was subsequently corrected so
+transport failures have unknown quality/latency rather than misleading zeros.
+No further model calls were needed for that correction.
+
+Recommendation: retain the deterministic CI gate, expand the difficult
+domain-specific cases, and isolate/pin client profiles and models before using
+these scores as a release-quality decision. The POC demonstrates a working
+evaluation loop, not evidence that the present skill improves every model.

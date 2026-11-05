@@ -44,6 +44,8 @@ test('matrix pairs identical tasks, balances repeated order, and bounds invocati
   assert.equal(makePlan().length, 18);
   assert.equal(makePlan(2).length, 36);
   assert.equal(makePlan(2)[18].arm, 'with_skill');
+  assert.equal(makePlan(8, ['copilot']).length, 48);
+  assert.throws(() => makePlan(9, ['copilot']), /50 CLI/);
   assert.throws(() => makePlan(3), /50 CLI/);
   assert.throws(() => makePlan(0), /positive integer/);
   assert.throws(() => makePlan(1, ['unknown']), /known providers/);
@@ -80,8 +82,15 @@ test('CLI adapters are noninteractive and surface process failures without netwo
 
 test('empty providers report unknown metrics, not invented zero latency or success', () => {
   const summary = summarize([{ provider: 'copilot', arm: 'with_skill',
-    duration_ms: 10, grading: { passed: false }, error: null }]);
+    exit_code: 0, duration_ms: 10, grading: { passed: false }, error: null },
+  { provider: 'copilot', arm: 'with_skill', exit_code: 0,
+    duration_ms: 20, grading: { passed: false }, error: null },
+  { provider: 'kiro', arm: 'without_skill', exit_code: 1,
+    duration_ms: 5, grading: null, error: 'Not logged in' }]);
   assert.equal(summary.find((row) => row.provider === 'copilot' && row.arm === 'with_skill').pass_rate, 0);
+  assert.equal(summary.find((row) => row.provider === 'copilot' && row.arm === 'with_skill').median_duration_ms, 15);
   assert.equal(summary.find((row) => row.provider === 'devin').pass_rate, null);
   assert.equal(summary.find((row) => row.provider === 'devin').median_duration_ms, null);
+  assert.equal(summary.find((row) => row.provider === 'kiro' && row.arm === 'without_skill').pass_rate, null);
+  assert.equal(summary.find((row) => row.provider === 'kiro' && row.arm === 'without_skill').median_duration_ms, null);
 });

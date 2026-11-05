@@ -57,13 +57,17 @@ function save(path, value) {
 export function summarize(records) {
   return providers.flatMap((provider) => ['without_skill', 'with_skill'].map((arm) => {
     const group = records.filter((row) => row.provider === provider && row.arm === arm);
-    const latencies = group.map((row) => row.duration_ms).toSorted((a, b) => a - b);
+    const responses = group.filter((row) => row.exit_code === 0);
+    const latencies = responses.map((row) => row.duration_ms).toSorted((a, b) => a - b);
+    const middle = Math.floor(latencies.length / 2);
     return {
       provider, arm, trials: group.length,
+      completed_responses: responses.length,
       passed: group.filter((row) => row.grading?.passed).length,
       errors: group.filter((row) => row.error).length,
-      pass_rate: group.length ? group.filter((row) => row.grading?.passed).length / group.length : null,
-      median_duration_ms: group.length ? latencies[Math.floor(latencies.length / 2)] : null,
+      pass_rate: responses.length ? responses.filter((row) => row.grading?.passed).length / responses.length : null,
+      median_duration_ms: !responses.length ? null : latencies.length % 2 ?
+        latencies[middle] : (latencies[middle - 1] + latencies[middle]) / 2,
     };
   }));
 }
@@ -106,7 +110,7 @@ function main() {
       .map((provider) => [provider, execFileSync(provider === 'kiro' ? 'kiro-cli' : provider,
         ['--version'], { encoding: 'utf8', timeout: 15_000 }).trim()]));
     const report = {
-      mode: 'live-inline-context', started_at: new Date().toISOString(),
+      mode: 'live-inline-context', status: 'running', started_at: new Date().toISOString(),
       revision: execFileSync('git', ['rev-parse', 'HEAD'], { cwd: root, encoding: 'utf8' }).trim(),
       versions, model_selection: 'CLI defaults; model identity must be checked in raw output',
       account_limits_confirmed: true, maximum_usd: 10, maximum_model_requests: 50,
@@ -147,10 +151,14 @@ function main() {
       console.log(`${row.provider} ${row.case_id} ${row.arm}: ` +
         `${record.error ? record.error : record.grading.passed ? 'PASS' : 'FAIL'} (${record.duration_ms}ms)`);
       if (result.error) {
+        report.status = 'transport-blocked';
+        report.finished_at = new Date().toISOString();
+        save(reportPath, report);
         throw new Error(`${row.provider} transport failed; stopped to avoid wasting budget. See ${reportPath}`);
       }
     }
     report.finished_at = new Date().toISOString();
+    report.status = records.some((record) => record.error || !record.grading?.passed) ? 'failed' : 'completed';
     save(reportPath, report);
     console.log(`Report: ${reportPath}`);
     if (records.some((record) => record.error || !record.grading?.passed)) process.exitCode = 1;
