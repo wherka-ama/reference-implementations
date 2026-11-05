@@ -25,6 +25,11 @@ Both paths are described below.
 
 ### Step 1 — Decide where it belongs
 
+On this experimental branch, the GSF-maintained Agent Skill lives in
+[`skills/green-code-skill/`](./skills/green-code-skill/) as a portable distribution
+layout. Other tools retain the categories below. See
+[`EXPERIMENT.md`](./EXPERIMENT.md) before extending this layout to new skills.
+
 The repository has two top-level categories:
 
 - **`specifications/<spec-name>/`** for implementations of GSF

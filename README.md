@@ -38,6 +38,11 @@ their own context.
 
 The repository is organised into two top-level categories:
 
+This experimental branch adds a portable `skills/` distribution directory.
+The GSF-maintained [green-code-skill](./skills/green-code-skill/) moves there
+intact; other developer tools remain under `tools/`. See
+[the experiment rationale](./EXPERIMENT.md) for migration and discovery limits.
+
 ```
 reference-implementations/
 ├── specifications/                    Implementations of GSF specifications
@@ -45,9 +50,11 @@ reference-implementations/
 │       ├── gsf/                       Maintained by the Green Software Foundation
 │       └── community/                 Contributed and maintained by the community
 │
-└── tools/                             Developer tools, agent skills, linters, workflows
-    ├── gsf/                           Maintained by the Green Software Foundation
-    └── community/                     Contributed and maintained by the community
+├── tools/                             Other developer tools, linters, workflows
+│   ├── gsf/                           Maintained by the Green Software Foundation
+│   └── community/                     Contributed and maintained by the community
+└── skills/
+    └── green-code-skill/              GSF-maintained portable Agent Skill
 ```
 
 **`specifications/`** holds runnable implementations of GSF
@@ -69,7 +76,7 @@ lives in reflects who stewards it, not who originally built it.
 | Project | Implements | Category | Maintainer |
 |---|---|---|---|
 | [sci-for-ai / llm-inference](./specifications/sci-for-ai/gsf/llm-inference/) | [SCI for AI](https://sci-for-ai.greensoftware.foundation/) applied to LLM inference | Specifications | GSF |
-| [green-code-skill](https://github.com/Green-Software-Foundation/reference-implementations/tree/main/tools/gsf/green-code-skill) | GSF Patterns Catalog and SCI principles applied to code generation and code review by agentic coding tools | Tools| GSF |
+| [green-code-skill](./skills/green-code-skill/) | GSF Patterns Catalog and SCI principles applied to code generation and code review by agentic coding tools | Skills | GSF |
 | [agentic-ai-impact-explorer](https://github.com/Green-Software-Foundation/reference-implementations/tree/main/tools/gsf/agentic-ai-impact-explorer) | An interactive educational simulator for cost, energy, carbon, and water impact of agentic LLM workloads with reduction levers mapped to green software patterns | Tools | GSF |
 | [mcp-sci](./tools/gsf/mcp-sci/) | [SCI for AI](https://sci-for-ai.greensoftware.foundation/) metrics exposed through the Model Context Protocol via an MCP extension | Tools | GSF |
 
