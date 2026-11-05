@@ -26,6 +26,7 @@ cross-check, not an implicit dependency of `npm run build`.
 npm ci
 npm run validate
 npm run build
+npm test
 ai-primitives-hub collection validate
 ```
 
@@ -88,3 +89,23 @@ history. Do not remove the other three experiments.
 - [Validation](https://github.com/AmadeusITGroup/prompt-registry/blob/main/docs/author-guide/validation.md)
 - [Commands and GitHub release contract](https://github.com/AmadeusITGroup/prompt-registry/blob/main/docs/reference/commands.md)
 - [Publishing](https://github.com/AmadeusITGroup/prompt-registry/blob/main/docs/author-guide/publishing.md)
+
+## Executed outcomes (2026-11-05)
+
+- Node 24.16.0; shared collection-scripts 1.0.6; Hub CLI 0.2.1.
+- Shared collection validation: 1/1 valid. Independent installed Hub CLI:
+  1/1 valid.
+- Build produced the named ZIP and standalone manifest under `dist/green-code/`.
+  The manifest identifies `green-code` 0.1.0, includes committed source revision
+  provenance, and declares the existing entry as a skill in `items` and `prompts`.
+- Archive inspection found exactly 21 files: all 17 original skill files plus
+  root license, presentation README, source collection snapshot, and manifest.
+- Automated archive test passed: exact membership, byte identity to committed
+  skill files, per-file SHA-256 presence, and embedded/standalone manifest equality.
+- No release, remote source discovery, or installed-target test was executed.
+  The workflow is ready for an explicit, reviewed publishing action, not an
+  assertion that any release already exists.
+
+Recommendation: this is the least disruptive starting point. Resolve the
+upstream dependency audit caveat and perform a clean target installation before
+choosing this as a production distribution path.

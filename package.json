@@ -5,7 +5,8 @@
   "engines": { "node": ">=20" },
   "scripts": {
     "validate": "validate-collections",
-    "build": "node scripts/build-collection.cjs"
+    "build": "node scripts/build-collection.cjs",
+    "test": "npm run build && node --test scripts/bundle.test.cjs"
   },
   "devDependencies": {
     "@prompt-registry/collection-scripts": "1.0.6"
