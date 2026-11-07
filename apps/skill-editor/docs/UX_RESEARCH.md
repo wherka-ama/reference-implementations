@@ -100,5 +100,48 @@ participant's text-editor baseline; do not claim a speed improvement without
 results. Specifically revisit staged Apply if it creates save mistakes.
 
 Manually test light/dark/high-contrast themes, 200% zoom, screen-reader
-announcements, large pasted text and hide/reopen behavior. Skill Markdown
-editing and eval-result visualization remain separate future scopes.
+announcements, large pasted text and hide/reopen behavior. Eval-result
+visualization remains a separate future scope.
+
+## Guided SKILL.md authoring
+
+The subsequent standards research is recorded in
+[SKILL_STANDARDS.md](SKILL_STANDARDS.md). It distinguishes the portable format,
+first-party harness extensions, observed loader tolerances and evidence gaps.
+Important findings: body headings are unrestricted, Unicode names are part
+of the reference interpretation, and Claude Code is not the same schema as
+Claude.ai/API uploads. No universal ASCII rule or fixed section wizard is
+imposed.
+
+The guided surface presents target selection, task/trigger descriptions,
+optional fields, a visual procedure editor and live validation. Each stage
+has plain-language hints and official documentation links. Suggested sections
+are optional scaffolds; author/version entries use labeled metadata rows.
+Advanced YAML remains available for unknown or structured client extensions.
+Profiles are local view preferences, not a field secretly added to the skill.
+
+[Tiptap Markdown](https://tiptap.dev/docs/editor/markdown) provides the
+formatting editor, but its own documentation warns about early-release
+limitations and loss of comments. Therefore rich mode is explicitly guarded:
+HTML/comments, images, tables, task lists and reference definitions use the
+lossless Markdown surface. A semantic render round-trip check declines rich
+conversion for additional incompatible input. Never normalize an untouched
+body just because the file was opened or a metadata field changed.
+
+Rich edits deliberately normalize Markdown formatting. Formatting controls
+include emphasis, headings, lists, code and links; executable link schemes
+are refused. Raw HTML is not inserted into a preview DOM. Referenced resources
+and skill hooks are not fetched or executed, and no AI assistant is called.
+
+Automatic validation is reassuring only if it is honest: errors block Apply,
+while recommendations, ignored fields and unresolved harness differences
+remain visible notes. “Format checks passed” is not security approval,
+runtime certification, upload acceptance, or a judgement of prompt quality.
+
+Extend the proposed user study with non-developer authors: create a skill
+without writing YAML, explain its trigger, add numbered steps, insert an
+example, resolve a validation error using an official link, then choose a
+different harness. Verify that they understand optional sections, advanced
+configuration and Apply versus Save. These tasks have not yet been evaluated
+with human participants; browser/keyboard/axe tests are regression evidence
+only.

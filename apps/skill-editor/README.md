@@ -1,12 +1,12 @@
 # Skill Editor
 
-An opt-in VS Code visual editor for `evals.json`. It makes long prompts,
-expected outputs and expectation arrays readable without manually escaping
-JSON strings or balancing commas and brackets.
+Opt-in VS Code visual editors for `SKILL.md` and `evals.json`. Author skill
+instructions using rich text and guided metadata, then define evaluations
+without manually escaping long JSON strings.
 
-This first release edits eval definitions only. It does **not** edit
-`SKILL.md`, execute evaluations, grade responses, interpret fixture paths,
-call AI services, or display benchmark results.
+The extension edits definitions only. It does **not** execute skills, hooks
+or evaluations, grade responses, interpret fixture paths, call AI services,
+install skills, or display benchmark results.
 
 ## Install and try
 
@@ -34,7 +34,57 @@ provided green-code-skill suite. For local development, open this application
 folder as the VS Code workspace and press **F5** to launch the Extension
 Development Host.
 
-## Editing workflow
+## Guided SKILL.md editor
+
+Open `SKILL.md`, choose **Reopen Editor With... > Guided Skill Editor**, or
+**Skill Editor: Open Guided Skill Editor** in the Command Palette, editor title
+or Explorer menu.
+
+1. Choose **Target harness**. The portable standard is the default. Profiles
+   cover Copilot VS Code/CLI, Codex, Claude Code/API/chat uploads, Kiro, Devin,
+   OpenCode V2, Cursor, Gemini CLI, Goose and Windsurf/Devin Local.
+   An explicitly unverified **Other harness** profile permits advanced fields
+   without claiming a client-specific compatibility contract.
+2. Explain the skill's name, task and activation conditions. Plain-language
+   hints, optional portable fields, harness controls and metadata rows avoid
+   requiring YAML knowledge. Official documentation links open only on request.
+3. Write the procedure using **Visual editing**: emphasis, headings, lists,
+   code blocks and links. Suggested sections have explanations and are
+   optional; arbitrary existing headings are valid.
+4. Live validation shows errors and notes as you edit. Errors block Apply;
+   notes explain portability, ignored fields, runtime dependencies and advice.
+   The host independently validates every Apply.
+5. **Apply skill**, then use VS Code Save/Undo/Redo as usual.
+
+See [standards and harness research](docs/SKILL_STANDARDS.md) before publishing
+skills. Profiles are a dated offline snapshot, not runtime certification.
+Claude.ai and platform documentation currently conflict; the editor exposes
+that disagreement rather than inventing a single limit. Unknown fields are
+preserved and can be edited in **Advanced frontmatter (YAML)**.
+
+YAML is parsed as YAML 1.2, including real scalar types and block strings.
+Edited strings are quoted for cross-parser compatibility. Comments and
+unknown values survive AST-based field edits, although frontmatter formatting
+may normalize. Body-only edits keep frontmatter bytes intact; metadata-only
+edits keep the Markdown body byte-for-byte intact. Duplicate keys, malformed
+YAML, unresolved custom tags, multiple documents and unbounded/circular alias
+expansion cannot silently replace a file.
+
+Visual body edits normalize Markdown formatting. Unsupported HTML/comments,
+images, tables, task lists and reference definitions use **Markdown editing**
+to avoid loss; a round-trip guard catches further conversion differences.
+No raw HTML preview is activated. Frontmatter and body have source fallbacks,
+and malformed YAML can be repaired in the native Markdown editor.
+
+Some documented loaders tolerate missing frontmatter, malformed YAML or
+client-specific values. Safe Code/OpenCode body-only files can remain without
+frontmatter; this editor intentionally refuses to rewrite malformed YAML.
+It does not reproduce lossy parser fallbacks or bypass harness security.
+
+Unapplied drafts survive webview recreation and are retained on external
+conflicts, but are not native document backups. Apply before Save or closing.
+
+## Evals editing workflow
 
 1. Search by ID, name, prompt, expected output, expectation text or file path.
    Space-separated terms all have to match; matching is case-insensitive.
@@ -93,21 +143,22 @@ The minimum shape is:
 
 Content is rendered as text, never HTML. A restrictive content security policy,
 local-resource allowlist and host-side action validation protect the webview.
-The extension performs no network requests, telemetry, fixture access or
-process execution and supports restricted/virtual workspaces. It relies on
+The extension performs no automatic network requests, telemetry, fixture
+access or process execution and supports restricted/virtual workspaces.
+Official links open externally only after a user action. It relies on
 VS Code's text-file handling rather than writing through Node filesystem APIs.
 
 ## Tests and TDD
 
 Behavior tests were written before the model and UI implementation. The
-initial model run failed with the missing implementation; subsequent
-red/green cycles included a native-host bundling failure caught by integration
-testing and fixed by selecting the parser's ESM entry point.
+initial model runs failed with missing implementations; subsequent red/green
+cycles included a native-host bundling failure and a recursive rich-editor
+update event, caught by integration and browser tests respectively.
 
 ```sh
-npm test                 # Offline parser/edit behavior and the real 40-case fixture
-npm run test:ui          # Build + browser interactions, keyboard, responsive layout, axe
-npm run test:extension   # Real VS Code webview bridge, Apply/Save/Undo/Redo, stale/concurrent edits
+npm test                 # JSON/YAML edits, standard thresholds, harness deviations, fixtures
+npm run test:ui          # Both editors, rich/source safeguards, keyboard, responsiveness, axe
+npm run test:extension   # Both native editors, Apply/Save/Undo/Redo, stale/concurrent edits
 npm run package          # Type-check, build and produce a VSIX
 npm audit               # Dependency advisories, including dev tools
 ```
@@ -137,8 +188,9 @@ light/dark/high-contrast themes, zoom, and saving/undoing from the visual tab.
 
 See [UX research and design](docs/UX_RESEARCH.md) for sources, trade-offs,
 acceptance criteria and a proposed user study. Architecture is deliberately
-small: a pure JSON model, a `CustomTextEditorProvider`, and a dependency-free
-DOM UI styled with VS Code theme tokens. TypeScript is strict, production
+small: pure JSON/YAML models, a shared `CustomTextEditorProvider` transport,
+and DOM UIs with Tiptap for rich Markdown, styled with VS Code theme tokens.
+TypeScript is strict, production
 dependencies are bundled, and development/test files are excluded from VSIX.
 
 The packaging tool's `minimatch` dependency is overridden to the patched
@@ -150,5 +202,6 @@ requested, rather than the repository's normal `tools/community` layout.
 It is not listed as a GSF-maintained implementation. Follow the repository
 contribution/proposal process before requesting upstream inclusion.
 
-Licensed under [MIT](LICENSE). The bundled JSON parser's license is reproduced
-in [THIRD_PARTY_NOTICES.txt](THIRD_PARTY_NOTICES.txt).
+Licensed under [MIT](LICENSE). Bundled dependency licenses are collected from
+esbuild's actual bundle inputs into
+[THIRD_PARTY_NOTICES.txt](THIRD_PARTY_NOTICES.txt) by the build.

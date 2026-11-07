@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import * as vscode from 'vscode';
-import { EvalsEditorProvider } from '../src/extension.ts';
+import { EvalsEditorProvider, SkillEditorProvider } from '../src/extension.ts';
 import { isRecord, parseEvals, type EditAction } from '../src/model.ts';
+import { parseSkill, type SkillAction } from '../src/skill-model.ts';
 
 export async function run(): Promise<void> {
   const directory = process.env['SKILL_EDITOR_TEST_DIR'];
@@ -21,14 +22,14 @@ export async function run(): Promise<void> {
   const provider = new EvalsEditorProvider(extension.extensionUri);
   const panels: vscode.WebviewPanel[] = [];
 
-  function createPanel(): vscode.WebviewPanel {
+  function createPanel(editorProvider = provider, model = document): vscode.WebviewPanel {
     const panel = vscode.window.createWebviewPanel('skillEditor.test', 'Test eval editor',
       vscode.ViewColumn.One, { enableScripts: true, retainContextWhenHidden: true });
-    provider.resolveCustomTextEditor(document, panel);
+    editorProvider.resolveCustomTextEditor(model, panel);
     panels.push(panel);
     return panel;
   }
-  async function drive(panel: vscode.WebviewPanel, action: EditAction, version = document.version): Promise<Record<string, unknown>> {
+  async function drive(panel: vscode.WebviewPanel, action: EditAction | SkillAction, version = document.version): Promise<Record<string, unknown>> {
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
         subscription.dispose();
@@ -51,6 +52,38 @@ export async function run(): Promise<void> {
         });
         api.postMessage(${payload});
         </script></body></html>`;
+    });
+  }
+  async function assertSkillUiBoots(panel: vscode.WebviewPanel): Promise<void> {
+    const nonce = /<script nonce="([^"]+)"/.exec(panel.webview.html)?.[1];
+    assert.ok(nonce);
+    await new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        subscription.dispose();
+        reject(new Error('Actual guided rich UI did not boot in this VS Code version.'));
+      }, 15000);
+      const subscription = panel.webview.onDidReceiveMessage((message: unknown) => {
+        if (isRecord(message) && message['testUiBoot'] === true) {
+          clearTimeout(timeout);
+          subscription.dispose();
+          resolve();
+        }
+      });
+      const driver = `<script nonce="${nonce}">
+        const testApi = (() => {
+          const original = window.acquireVsCodeApi;
+          let api;
+          window.acquireVsCodeApi = () => api ??= original();
+          return () => api;
+        })();
+        const timer = setInterval(() => {
+          if (document.querySelector('.tiptap')) {
+            clearInterval(timer);
+            testApi()?.postMessage({ type: 'ready', testUiBoot: true });
+          }
+        }, 50);
+      </script>`;
+      panel.webview.html = panel.webview.html.replace(/<script nonce=/, `${driver}<script nonce=`);
     });
   }
   try {
@@ -90,6 +123,37 @@ export async function run(): Promise<void> {
     assert.equal(outcomes.filter(result => result['error'] === undefined).length, 1);
     assert.equal(outcomes.filter(result => String(result['error']).includes('Document changed')).length, 1);
     console.log('PASS: concurrent views serialize and reject the losing stale edit');
+
+    const skillDirectory = join(directory, 'example');
+    await mkdir(skillDirectory);
+    const skillUri = vscode.Uri.file(join(skillDirectory, 'SKILL.md'));
+    const skillOriginal = '---\n# Preserve YAML comment\nname: example\ndescription: Use for example tasks.\n---\n\n# Arbitrary instructions\n\nDo the work.\n';
+    await writeFile(skillUri.fsPath, skillOriginal);
+    const skillDocument = await vscode.workspace.openTextDocument(skillUri);
+    await vscode.window.showTextDocument(skillDocument, vscode.ViewColumn.Two);
+    await vscode.commands.executeCommand('skillEditor.openSkill');
+    await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+    const skillPanel = createPanel(new SkillEditorProvider(extension.extensionUri), skillDocument);
+    await assertSkillUiBoots(skillPanel);
+    const skillResult = await drive(skillPanel, { type: 'updateSkill', profile: 'claude-code',
+      fields: { description: 'A multiline description.\nUse when testing.', 'disable-model-invocation': true } }, skillDocument.version);
+    assert.equal(skillResult['error'], undefined);
+    assert.equal(parseSkill(skillDocument.getText()).metadata['disable-model-invocation'], true);
+    assert.equal(parseSkill(skillDocument.getText()).body, parseSkill(skillOriginal).body);
+    assert.ok(skillDocument.getText().includes('# Preserve YAML comment'));
+    assert.equal(await readFile(skillUri.fsPath, 'utf8'), skillOriginal);
+    await vscode.window.showTextDocument(skillDocument, vscode.ViewColumn.Two);
+    await vscode.commands.executeCommand('undo');
+    assert.equal(skillDocument.getText(), skillOriginal);
+    await vscode.commands.executeCommand('redo');
+    await skillDocument.save();
+    assert.equal(await readFile(skillUri.fsPath, 'utf8'), skillDocument.getText());
+    const beforeInvalid = skillDocument.getText();
+    const invalid = await drive(skillPanel, { type: 'updateSkill', profile: 'portable',
+      fields: { name: 'Upper' } }, skillDocument.version);
+    assert.ok(invalid['error']);
+    assert.equal(skillDocument.getText(), beforeInvalid);
+    console.log('PASS: guided SKILL editor registration, native YAML Apply/Save/Undo/Redo and host validation');
   } finally {
     for (const panel of panels) panel.dispose();
     await document.save();

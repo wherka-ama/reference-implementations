@@ -75,9 +75,10 @@ lives in reflects who stewards it, not who originally built it.
 
 ## Experimental applications
 
-[Skill Editor](./apps/skill-editor/) is an opt-in VS Code visual editor for
-skill `evals.json` files, with multiline authoring, structured expectations
-and native document save/undo support. It is an experimental application,
+[Skill Editor](./apps/skill-editor/) contributes opt-in VS Code visual editors
+for `SKILL.md` and `evals.json`, with guided metadata, rich instructions,
+harness-aware validation, structured expectations and native save/undo.
+It is an experimental application,
 not a GSF-maintained reference implementation.
 
 ## Contributing
