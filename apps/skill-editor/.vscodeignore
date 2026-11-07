@@ -1,0 +1,12 @@
+node_modules/**
+src/**
+tests/**
+.vscode/**
+.vscode-test/**
+tsconfig.json
+esbuild.mjs
+package-lock.json
+docs/**
+dist/extension-host.cjs
+*.vsix
+.gitignore

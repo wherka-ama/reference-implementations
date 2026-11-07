@@ -73,6 +73,13 @@ lives in reflects who stewards it, not who originally built it.
 | [agentic-ai-impact-explorer](https://github.com/Green-Software-Foundation/reference-implementations/tree/main/tools/gsf/agentic-ai-impact-explorer) | An interactive educational simulator for cost, energy, carbon, and water impact of agentic LLM workloads with reduction levers mapped to green software patterns | Tools | GSF |
 | [mcp-sci](./tools/gsf/mcp-sci/) | [SCI for AI](https://sci-for-ai.greensoftware.foundation/) metrics exposed through the Model Context Protocol via an MCP extension | Tools | GSF |
 
+## Experimental applications
+
+[Skill Editor](./apps/skill-editor/) is an opt-in VS Code visual editor for
+skill `evals.json` files, with multiline authoring, structured expectations
+and native document save/undo support. It is an experimental application,
+not a GSF-maintained reference implementation.
+
 ## Contributing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for the contribution process,

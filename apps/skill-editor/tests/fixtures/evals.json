@@ -1,0 +1,538 @@
+{
+  "schema_version": "1.0.0",
+  "skill_name": "green-code-skill",
+  "skill_version": "1.0.0",
+  "description": "Forty source-annotated evaluations across requirements, ideation, research, design, build, deployment, infrastructure, electricity signals, scheduling, AI, operations and retirement. Original contracts and broader capability probes are distinguished in sources.json and SOURCE_NOTES.md. Expectations assess observable answers rather than hidden reference reads. Two existing user-selected code fixtures are reused; other cases are self-contained advisory scenarios, not empirical benchmarks. Skill version uses the framework fallback because no metadata.version is declared.",
+  "evals": [
+    {
+      "id": 1,
+      "name": "generate-paginated-catalog-endpoint",
+      "prompt": "[auto] Write a small JavaScript Express GET /products endpoint using an injected PostgreSQL pool. This is a high-traffic catalog list view, and the UI needs only id, name, and price. Reduce cloud compute and network cost. Use parameterized SQL, deterministic id ordering, and a validated page-size limit from 1 to 100, defaulting to 20. Keep the example focused: no new Redis service, deployment framework, or language migration. Explain the green choices and any correctness or freshness trade-offs.",
+      "expected_output": "Working, focused endpoint code with bounded pagination and database projection, followed by the skill's Green Notes explaining applicable GSF patterns, SCI terms, canonical sources, and trade-offs. No unnecessary infrastructure or invented emissions results.",
+      "expectations": [
+        "[auto] Identifies database projection and bounded pagination as relevant ways to reduce avoidable database, serialization and network work, grounding the explanation in the requested catalog workload.",
+        "[auto] Generates parameterized SQL selecting only id, name, and price, with deterministic id ordering and pagination rather than fetching the entire catalog and slicing it in application memory.",
+        "[auto] Implements page-size validation matching the requested integer range of 1 to 100 and default of 20; invalid input cannot silently trigger an unbounded query.",
+        "[auto] Ends with a Green Notes block identifying a focused set of 2 to 5 applicable patterns, mapping each to the relevant SCI term and a source pattern URL.",
+        "[auto] Explains pagination or freshness trade-offs without adding an unrequested cache service or claiming measured energy or carbon savings."
+      ],
+      "files": []
+    },
+    {
+      "id": 2,
+      "name": "review-duplicate-batch-loader",
+      "prompt": "[auto] Review files/batch-loader.mjs for green-software improvements. This batch handles 10,000 IDs with frequent duplicates against a rate-limited API. Preserve output order, duplicate outputs, and fail-fast behavior. Reads can change during the load and we have not established freshness requirements. Give a review, not an automatic rewrite, and distinguish safe findings from conditional changes.",
+      "expected_output": "A structured Green Software Review grounded in the supplied loader, with severity-ordered findings, locations, pattern sources, qualitative SCI impacts, concrete fixes, passed patterns, and out-of-scope deployment questions. Deduplication and concurrency proposals are conditional on semantics, freshness, and API quotas.",
+      "expectations": [
+        "[auto] Grounds the findings in the actual supplied loader and explains why unknown freshness and fail-fast semantics constrain caching and concurrency changes.",
+        "[auto] Uses the Green Software Review structure: workload type, files reviewed, severity-ordered findings with location, issue, canonical pattern/source, SCI impact and suggested fix, followed by passed patterns and out-of-scope concerns.",
+        "[auto] Identifies repeated IDs as a potential redundant-request opportunity but makes deduplication conditional on stable or acceptably stale reads; does not assume repeated reads necessarily have interchangeable results.",
+        "[auto] Recognizes that the loader already uses asynchronous I/O; describes its sequential execution accurately rather than falsely identifying a synchronous network client.",
+        "[auto] Any concurrency proposal is bounded and accounts for rate limits, original output positions, duplicate outputs and changed fail-fast semantics; it does not propose launching all 10,000 calls through unbounded Promise.all.",
+        "[auto] Gives qualitative energy or request-count impact, acknowledges the existing bounded one-at-a-time behavior as a passed property, and does not invent numeric carbon savings or infer the grid's carbon intensity from code."
+      ],
+      "files": ["files/batch-loader.mjs"]
+    },
+    {
+      "id": 3,
+      "name": "review-unbounded-tool-agent",
+      "prompt": "[auto] Our production agent can get stuck and run up inference and tool costs. Review files/tool-agent.mjs for energy-efficient orchestration. The planner can repeat identical tool calls; tools can fail transiently or permanently and may have side effects. Identify separate failure modes and concrete safeguards. Do not call external models or tools to reproduce the problem.",
+      "expected_output": "An agentic AI review that distinguishes unlimited outer planning from unlimited inner retries, proposes bounded and classified retry handling, detects repeated tool invocations, surfaces explicit failure, and treats routing or caching as conditional on quality and side-effect safety.",
+      "expectations": [
+        "[auto] Recognizes the agentic workload and explains how repeated planning and tool calls amplify work per user goal rather than treating this only as generic HTTP optimization.",
+        "[auto] Identifies separate uncapped planning and tool-retry loops and proposes independent finite iteration and attempt budgets; a backoff ceiling alone is not treated as a limit on attempts.",
+        "[auto] Proposes retrying only classified transient errors, with finite capped backoff, and requires idempotency or another explicit safety mechanism before retrying side-effecting operations.",
+        "[auto] Proposes tracking repeated tool name/argument states or lack of progress and stopping with an explicit stuck/failure report rather than returning an empty success-shaped answer.",
+        "[auto] Treats the largest-model-for-every-step choice as a candidate for task-based routing with quality evaluation, not as justification to force every task onto the smallest model.",
+        "[auto] Does not execute the uncapped fixture or invoke live model/tool services; expresses any energy or carbon benefit directionally rather than repeating unmeasured numeric savings from the reference."
+      ],
+      "files": ["files/tool-agent.mjs"]
+    },
+    {
+      "id": 4,
+      "name": "weigh-serverless-freshness-constraints",
+      "prompt": "[auto] Help design a greener cloud architecture for a live-search service with steady high throughput, a strict 30 ms p99 response target, freshness-critical account reads, and a policy requiring service-to-service mTLS. A teammate says we should always use scale-to-zero, queue every request until the grid is cleaner, cache balances for an hour, and terminate all TLS at the public gateway. We have no energy baseline. Which suggestions would you accept, reject, or defer, and what would you measure first?",
+      "expected_output": "Context-sensitive architecture advice that rejects recommendations conflicting with latency, freshness and encryption constraints, distinguishes code efficiency from operational carbon awareness, and suggests benchmarked right-sizing or other suitable alternatives without prescribing a universal migration.",
+      "expectations": [
+        "[auto] Uses steady throughput, the 30 ms p99 target, freshness and mandated mTLS as actual decision constraints rather than assuming every green pattern is applicable.",
+        "[auto] Rejects a blanket scale-to-zero recommendation because steady throughput and strict latency make cold starts a material concern; recommends comparing suitable right-sized infrastructure using measurements.",
+        "[auto] Does not defer real-time live-search responses to cleaner-grid windows; confines time-shifting to genuinely deferrable work and respects the p99 target.",
+        "[auto] Does not endorse hour-long account-balance caching without a correctness-preserving freshness/invalidation design and does not remove mandated service-to-service mTLS.",
+        "[auto] Distinguishes E and hardware-related M opportunities from region/time-dependent I, framing carbon-aware scheduling as an operational outcome that code can enable rather than directly changing the grid mix.",
+        "[auto] Provides concrete measurement and decision criteria using latency, throughput, freshness, resource/energy observations and a consistent functional unit, without inventing savings percentages."
+      ],
+      "files": []
+    },
+    {
+      "id": 5,
+      "name": "calculate-sci-functional-unit",
+      "prompt": "[auto] Using supplied estimates E=0.2 kWh, I=300 gCO2e/kWh, allocated embodied emissions M=10 gCO2e, and R=100 completed requests for the same workload boundary and period, calculate SCI per request and explain the units. If the same total E and M served 200 otherwise equivalent completed requests instead, would SCI rise or fall? Can compressing JSON responses by itself reduce I? These are hypothetical inputs, not measured results.",
+      "expected_output": "Correct SCI calculation of 0.7 gCO2e/request, then 0.35 for 200 equivalent requests at unchanged totals. Clear boundary and uncertainty qualifications and a distinction between compression reducing workload energy and operational choices affecting grid intensity.",
+      "expectations": [
+        "[auto] Calculates ((0.2 * 300) + 10) / 100 = 0.7 gCO2e per completed request with explicit units, rather than presenting the 70 gCO2e total as per-request SCI.",
+        "[auto] Correctly concludes that doubling R at fixed total E, I and M halves SCI to 0.35 gCO2e/request; does not repeat the reference's inconsistent statement that halving R represents twice as much useful work.",
+        "[auto] Distinguishes SCI intensity from total emissions and requires the same functional-unit definition, system boundary and accounting period for meaningful comparisons.",
+        "[auto] Treats the provided numbers as hypothetical estimates and does not imply it measured runtime energy, allocated embodied emissions or actual carbon savings.",
+        "[auto] Explains that JSON compression can change E and has CPU/network trade-offs but cannot by itself change grid carbon intensity I; identifies region/time selection as an operational decision."
+      ],
+      "files": []
+    },
+    {
+      "id": 6,
+      "name": "prioritize-green-ai-design",
+      "prompt": "[auto] We are planning an AI service and want a practical overview of green design choices. It may combine occasional training, public inference, and an agent that retrieves documents and calls tools. We have not chosen a region, model, latency target, hardware or deployment platform. Help us prioritize what to investigate without writing a full implementation or giving unsupported savings estimates.",
+      "expected_output": "Actionable, scoped guidance covering energy efficiency, hardware efficiency and carbon awareness, with workload-specific AI/ML and agentic priorities, uncertainty, and clarification of missing requirements rather than an indiscriminate architecture checklist.",
+      "expectations": [
+        "[auto] Separates training, inference and agentic orchestration and explains their different frequency, quality, latency and resource requirements rather than treating their constraints as identical.",
+        "[auto] Organizes or explains priorities through energy efficiency, hardware efficiency and carbon awareness, tying them to E, M and I and a clearly chosen functional unit R.",
+        "[auto] Provides actionable agentic safeguards such as finite retry/planning budgets, loop detection or scoped caching, while treating routing and quantization as changes requiring quality/accuracy evaluation.",
+        "[auto] Makes serverless, region/time shifting and edge inference conditional on latency, utilization, data/privacy and device constraints; if recommending edge inference, names the shift to client energy and embodied/device-lifecycle impact.",
+        "[auto] Elicits or explicitly identifies the missing workload, latency, quality, freshness and baseline information needed to prioritize changes, without fabricating measurements or forcing a complete redesign."
+      ],
+      "files": []
+    },
+    {
+      "id": 7,
+      "name": "preserve-intentional-stress-test",
+      "prompt": "[auto] I am intentionally building a one-off JavaScript stress test to saturate a local test server, not production code. Please fix only the syntax error in this snippet: const targets = ['http://127.0.0.1:8080/test']; await Promise.all(targets.map(url => fetch(url)); Do not add throttling, retries, caching, architecture changes or an efficiency review. Show the corrected snippet only; do not execute it.",
+      "expected_output": "Only the syntax-correct snippet with the missing closing parenthesis restored, preserving the intentional stress-test behavior. No Green Notes, environmental refactor, execution or unrelated advice.",
+      "expectations": [
+        "[auto] Keeps the response to the requested syntax-only correction and preserves the intentional stress-test behavior rather than imposing environmental optimizations.",
+        "[auto] Fixes the missing closing parenthesis to produce await Promise.all(targets.map(url => fetch(url))); without changing the requested behavior.",
+        "[auto] Does not add caching, concurrency limits, retry logic, sustainability advice, Green Notes or an unsolicited architecture migration.",
+        "[auto] Does not run the stress-test snippet or send requests to the local endpoint."
+      ],
+      "files": []
+    },
+    {
+      "id": 8,
+      "name": "evaluate-ai-feature-necessity",
+      "prompt": "[auto] We are ideating a document-labeling feature and want to reduce its environmental footprint before writing code. The labels come from a small fixed taxonomy, a rules-based baseline is possible, and human review is available for uncertain cases. We have not measured accuracy, demand or energy. Compare not building the feature, rules/search, a small classifier and an LLM-assisted design. What evidence would justify moving to the more complex option?",
+      "expected_output": "A requirements-first comparison that does not assume AI is necessary, defines useful successful outcomes, and proposes quality and resource measurements before selecting a solution.",
+      "expectations": [
+        "[auto] Compares a simpler non-AI baseline against classifier and LLM alternatives rather than automatically prescribing a frontier model.",
+        "[auto] Defines useful work in terms of correctly labeled documents or another stated quality-qualified outcome, not raw model-call volume.",
+        "[auto] Identifies demand, accuracy, review effort, latency and data/privacy requirements needed to choose among the alternatives.",
+        "[auto] Includes development and recurring operational work in the comparison and does not invent an energy saving or claim the unbuilt alternatives have measured carbon scores."
+      ],
+      "files": []
+    },
+    {
+      "id": 9,
+      "name": "capture-sustainability-acceptance-requirements",
+      "prompt": "[auto] Write a short requirements and acceptance-criteria outline for a greener background document-processing service. Product asks for lower cloud cost, engineering asks for lower carbon, and users still need correct results by their deadline. No baseline exists. Include the questions we must resolve, the comparison boundary and what would count as evidence of improvement; do not choose a cloud or implement the service yet.",
+      "expected_output": "Measurable requirements with a useful functional unit, consistent baseline and boundary, quality/deadline constraints and explicit separation of cost and carbon.",
+      "expectations": [
+        "[auto] Defines a quality-qualified functional unit such as a correctly processed document and distinguishes its intensity from total emissions over a reporting period.",
+        "[auto] Requires comparable baseline and changed-system methodology, workload mix and boundary before asserting improvement.",
+        "[auto] Captures correctness, deadlines, availability, privacy and residency as constraints rather than relaxing them without product approval.",
+        "[auto] Separates currency, energy and carbon acceptance metrics and identifies missing measurements instead of setting unsupported percentage reductions."
+      ],
+      "files": []
+    },
+    {
+      "id": 10,
+      "name": "research-cost-energy-evidence",
+      "prompt": "[auto] A vendor slide claims that moving our service to a cheaper ARM instance cuts carbon by the same percentage as the monthly bill. We have only the slide, CPU utilization and invoice totals, not power measurements or a reproducible benchmark. Design a research plan to evaluate the claim. Explain how you would assess sources, compare the same useful workload and report remaining uncertainty.",
+      "expected_output": "A reproducible evidence plan that distinguishes billing and utilization proxies from energy/carbon measurements and tests performance and compatibility before choosing hardware.",
+      "expectations": [
+        "[auto] Rejects equating a billing discount or CPU-utilization difference with an identical carbon reduction.",
+        "[auto] Requests the claim's workload, hardware, measurement method, boundary, time period and underlying primary evidence.",
+        "[auto] Proposes comparing the same useful workload, quality and latency/throughput constraints on compatible hardware, including idle or reserved capacity where relevant.",
+        "[auto] States how measured or modeled energy, electricity intensity and embodied allocation would enter the result, reporting missing data rather than manufacturing a carbon figure."
+      ],
+      "files": []
+    },
+    {
+      "id": 11,
+      "name": "design-efficient-build-pipeline",
+      "prompt": "[auto] Our GitHub Actions pipeline rebuilds unchanged dependencies and reruns superseded feature-branch builds. Production deployments and mandatory test/security gates must not be cancelled or skipped. Propose a green build design with safe dependency caching, targeted work and branch-specific concurrency cancellation. Give configuration guidance without executing a workflow or weakening release correctness.",
+      "expected_output": "A build-efficiency plan using reproducible cache keys and safe superseded-run cancellation while preserving release and security gates.",
+      "expectations": [
+        "[auto] Proposes dependency/build caching keyed by relevant dependency and environment changes rather than blindly reusing stale artifacts.",
+        "[auto] Scopes superseded-run cancellation to appropriate feature-branch work and distinguishes it from serializing or protecting production deployments.",
+        "[auto] Retains required correctness and security checks and includes transitive dependencies when deciding which work can safely be targeted.",
+        "[auto] Includes CI/build/deployment resources in the assessment boundary and describes potential avoided work without asserting a measured emissions percentage."
+      ],
+      "files": []
+    },
+    {
+      "id": 12,
+      "name": "rightsize-nonproduction-environments",
+      "prompt": "[auto] We have long-lived development environments, PR previews, a staging environment that catches release defects and production. Some non-production resources remain idle overnight. Propose a sustainability plan that preserves test isolation and release protection. Include lifecycle ownership, restart behavior and how to verify that resources really stop consuming provisioned capacity.",
+      "expected_output": "Selective scheduling, right-sizing and expiry with ownership and recovery checks, not blanket elimination of staging or tests.",
+      "expectations": [
+        "[auto] Targets idle previews or development resources with scoped shutdown/expiry and considers smaller staging capacity without removing staging's protective role.",
+        "[auto] Preserves required isolation, data and restart/dependency behavior and identifies owners before scheduling or deleting resources.",
+        "[auto] Verifies actual resource release, including leftover volumes or supporting services, rather than assuming stopping application traffic releases all hardware.",
+        "[auto] Explains energy and embodied-capacity implications as workload-dependent and does not claim eliminating environments always improves overall outcomes."
+      ],
+      "files": []
+    },
+    {
+      "id": 13,
+      "name": "separate-renewable-contract-grid-intensity",
+      "prompt": "[auto] A cloud provider advertises 100% renewable electricity through annual certificates and contracts. A teammate wants to set I=0 in our SCI calculation and use the provider's clean-energy attribution percentage instead of grid intensity. Explain what evidence and accounting distinctions are needed before making that claim. This is an SCI question, not a request to prepare a corporate emissions inventory.",
+      "expected_output": "A clear distinction between contractual renewable attribution and physical/grid electricity intensity, applying SCI's exclusion of market-based measures.",
+      "expectations": [
+        "[auto] Does not set SCI electricity intensity to zero solely because of annual renewable contracts, RECs, PPAs, offsets or a provider-level claim.",
+        "[auto] Explains that SCI uses a stated grid-intensity method excluding market-based measures, keeping contractual attribution separate from I.",
+        "[auto] Requests relevant location, time coverage and intensity methodology and does not assume a clean-energy percentage is interchangeable with gCO2e/kWh.",
+        "[auto] Avoids giving an unsupported corporate accounting or certification verdict; cites the SCI rule and explains the limits of available evidence."
+      ],
+      "files": []
+    },
+    {
+      "id": 14,
+      "name": "choose-comparable-electricity-signals",
+      "prompt": "[auto] One electricity-data provider supplies average grid emissions and another supplies marginal emissions forecasts. A proposal ranks regions using the first signal and claims avoided emissions using the second without explaining the change. Explain how we should choose and document signals for measurement versus load-shifting decisions, including timestamps, geographic coverage and uncertainty. Do not look up or rank real regions.",
+      "expected_output": "Methodologically consistent handling of average and marginal signals, with explicit purpose and no unsupported real-world ranking.",
+      "expectations": [
+        "[auto] Distinguishes average grid intensity from marginal intensity associated with changes in load and does not describe them as interchangeable measurements.",
+        "[auto] States the signal purpose and methodology for each comparison rather than mixing methods without disclosure.",
+        "[auto] Requires matching location, units, time resolution, data freshness and forecast horizon and reports uncertainty.",
+        "[auto] Does not assume a low-average-intensity region must also have the lowest marginal impact or manufacture a region ranking from unavailable data."
+      ],
+      "files": []
+    },
+    {
+      "id": 15,
+      "name": "schedule-deadline-bounded-batch",
+      "prompt": "[auto] Design a carbon-aware scheduler for a deferrable two-hour batch that must finish by 06:00 UTC, cannot run before midnight and must remain in its approved region. Forecasts may change after admission. Explain feasible windows, the latest safe start, explicit fallback behavior and what to record. No forecast values are supplied, so do not invent an optimal start or claim a percentage saved.",
+      "expected_output": "A feasible scheduling policy bounded by duration, deadline and residency, with observable fallback and measurement rather than invented forecasts.",
+      "expectations": [
+        "[auto] Derives 04:00 UTC as the latest start only if the stated two-hour duration is a reliable upper bound with no additional margin; otherwise reserves an explicit safety margin.",
+        "[auto] Considers eligible complete execution windows rather than choosing the single cleanest instant regardless of job duration.",
+        "[auto] Preserves approved-region and deadline constraints, rechecks forecasts as appropriate and defines an explicit deadline-safe fallback rather than deferring indefinitely.",
+        "[auto] Records scheduling decisions, signal/method provenance, actual execution and fallback reasons, and does not invent forecast values or measured savings."
+      ],
+      "files": []
+    },
+    {
+      "id": 16,
+      "name": "weigh-location-shift-transfer-overhead",
+      "prompt": "[auto] We could move a large-data training job to a region advertised as having cleaner electricity, but the dataset is residency-restricted and the job would require cross-region transfer and replicated storage. Compare time shifting in place, allowed location shifting and improving energy efficiency. What must be checked before claiming a net reduction?",
+      "expected_output": "A constraint-respecting comparison that counts transfer/replication and separates I changes from E and M changes.",
+      "expectations": [
+        "[auto] Treats residency restrictions as hard constraints and does not recommend transferring the restricted dataset outside approved locations.",
+        "[auto] Evaluates time shifting in place as a separate option from region migration, subject to deadlines and operational feasibility.",
+        "[auto] Includes data transfer, replicated storage, changed runtime/hardware and checkpoint or migration overhead in the comparison boundary.",
+        "[auto] Explains that lower I alone does not establish lower total emissions if E or M changes and requires comparable evidence before claiming a net reduction."
+      ],
+      "files": []
+    },
+    {
+      "id": 17,
+      "name": "handle-missing-carbon-forecast",
+      "prompt": "[auto] A carbon-aware background-job controller sometimes receives stale forecasts, empty responses or a provider error. Jobs still have contractual deadlines. Write a behavior and observability policy for those cases. Do not call a live data provider and do not substitute guessed carbon values.",
+      "expected_output": "Explicit invalid-signal handling, bounded retries, deadline-safe fallbacks and separate data-health signals.",
+      "expectations": [
+        "[auto] Treats stale, absent and invalid carbon data as unavailable, not as zero emissions or a successful optimization decision.",
+        "[auto] Uses bounded classified retries where appropriate and defines an explicit deadline-safe execution or escalation fallback.",
+        "[auto] Separately records forecast age/provider failure and scheduler outcome so operators can distinguish optimization failure from successful job completion.",
+        "[auto] Does not call a live provider, fabricate intensity values or silently suppress the failure."
+      ],
+      "files": []
+    },
+    {
+      "id": 18,
+      "name": "balance-batching-load-elasticity",
+      "prompt": "[auto] Background jobs can tolerate delay, but interactive API requests cannot. All workers currently wake together when a low-carbon window opens, creating a capacity spike. Propose a greener queue/autoscaling strategy without turning the cleaner window into a new peak or delaying interactive responses.",
+      "expected_output": "Workload-separated admission and smoothing with bounded concurrency, queue/deadline controls and measured scaling trade-offs.",
+      "expectations": [
+        "[auto] Separates deferrable jobs from latency-sensitive requests and does not batch or defer the latter indiscriminately.",
+        "[auto] Proposes staggering/admission control or bounded worker concurrency to prevent a synchronized resource spike.",
+        "[auto] Accounts for queue age, job deadlines, capacity limits and scaling behavior rather than optimizing grid intensity alone.",
+        "[auto] Measures total reserved/idle capacity and completed useful work when assessing the strategy and does not assume shorter elapsed time proves lower energy."
+      ],
+      "files": []
+    },
+    {
+      "id": 19,
+      "name": "select-workload-matched-hardware",
+      "prompt": "[auto] We can choose x86 CPUs, ARM CPUs or an accelerator for a mixed service: a mostly I/O-bound API and a small inference task. Propose how to select hardware and allocation sizes. The smallest instance may miss throughput requirements and the fastest device may sit idle. No benchmark or energy data is supplied.",
+      "expected_output": "A workload-specific compatibility and performance-per-energy evaluation, with reserved capacity and no universal architecture ranking.",
+      "expectations": [
+        "[auto] Separates I/O-bound API work from inference and checks software/model compatibility for each hardware option.",
+        "[auto] Benchmarks required quality, latency and throughput with suitable energy measurements or explicitly described estimates before selecting hardware.",
+        "[auto] Considers utilization, memory fit, idle/reserved capacity and shared/fractional accelerator options where supported rather than always choosing the fastest or smallest device.",
+        "[auto] Does not assert ARM or an accelerator is universally greener and does not conflate hardware energy efficiency with changing grid intensity."
+      ],
+      "files": []
+    },
+    {
+      "id": 20,
+      "name": "account-hardware-lifetime-allocation",
+      "prompt": "[auto] Use the SCI specification's illustrative example: a device has 1000 kgCO2e embodied emissions, a four-year expected life using 365 days/year, and is fully reserved for one hour. Calculate the allocated embodied emissions for that hour. Then explain why replacing existing hardware with a more efficient device needs both operational and embodied analysis. These are published example inputs, not measurements of our fleet.",
+      "expected_output": "Approximately 28.54 gCO2e time allocation, with clear units and a replacement assessment including new embodied emissions and expected life.",
+      "expectations": [
+        "[auto] Computes 1000/(4*365*24) kgCO2e, approximately 0.02854 kg or 28.54 g for the fully reserved hour, without treating the entire 1000 kg as the hourly allocation.",
+        "[auto] States that this uses full resource reservation and that a different reserved share would require a corresponding disclosed allocation.",
+        "[auto] Treats lifespan and embodied inputs as assumptions/examples, not measured fleet facts or a universal lifetime constant.",
+        "[auto] Includes new-device embodied emissions, operational energy over the comparison period and useful lifetime in a replacement decision; does not assert immediate replacement always reduces emissions."
+      ],
+      "files": []
+    },
+    {
+      "id": 21,
+      "name": "match-storage-access-requirements",
+      "prompt": "[auto] Choose a storage strategy for hot transactional data, shared working files and rarely restored archives. Compare block, file and object storage, performance tiers and lifecycle transitions for sustainability. We know each dataset has different latency, access and retention requirements but have no hardware-energy measurements. Explain how to decide; do not prescribe a universal HDD-versus-SSD winner.",
+      "expected_output": "Access- and semantics-driven storage selection with lifecycle policies, right-sized performance and explicit unknown energy evidence.",
+      "expectations": [
+        "[auto] Matches storage semantics and latency/throughput requirements to the dataset rather than assuming all data can move to a cheap archive or object tier.",
+        "[auto] Considers capacity, provisioned IOPS/throughput, utilization and automated growth or lifecycle transition instead of overprovisioning for hypothetical future demand.",
+        "[auto] Accounts for retrieval/transition costs, restore latency, durability and retention constraints when considering colder tiers.",
+        "[auto] Does not claim a universal HDD/SSD or storage-class carbon ranking from price alone and requests workload/hardware evidence for quantitative energy comparisons."
+      ],
+      "files": []
+    },
+    {
+      "id": 22,
+      "name": "preserve-backup-retention-obligations",
+      "prompt": "[auto] We want to reduce storage and backup overhead. There are obsolete intermediate datasets, versioned artifacts, legal-hold records and backups needed to meet recovery objectives. Propose lifecycle and compression policies. Do not delete anything or relax legal, security or recovery requirements.",
+      "expected_output": "Classified retention and cleanup policies with ownership, restore validation and intact protected records.",
+      "expectations": [
+        "[auto] Separates disposable intermediates from legally retained records and recovery-critical backups before proposing deletion or transition.",
+        "[auto] Defines ownership, retention/expiry and protected-data exceptions, considering versioned objects and artifacts rather than only active files.",
+        "[auto] Preserves recovery point/time requirements and calls for restore testing and verification of compression or archival effects.",
+        "[auto] Proposes reviewed automation rather than executing deletion, and includes backup/redundancy resources in the assessment boundary."
+      ],
+      "files": []
+    },
+    {
+      "id": 23,
+      "name": "reduce-telemetry-without-blindness",
+      "prompt": "[auto] Our healthy high-volume requests produce full traces and debug payloads; metrics label every request ID, and logs are kept indefinitely. Operations needs visibility into rare errors and slow requests, and security audit events must be retained. Design a leaner observability plan, including head versus tail sampling and the resources required by the sampler.",
+      "expected_output": "A privacy-aware, evidence-based telemetry plan preserving critical visibility and accounting for sampling/aggregation overhead.",
+      "expectations": [
+        "[auto] Proposes reducing unnecessary debug payloads, unbounded labels and retention with explicit data-class exceptions rather than switching off observability.",
+        "[auto] Distinguishes head sampling from tail sampling and recognizes that head sampling alone cannot guarantee capture of every error discovered later in a trace.",
+        "[auto] Accounts for tail-sampler buffering/compute and possible information loss, validating observability coverage rather than assuming sampling is free.",
+        "[auto] Preserves mandated audit records, rare-error/latency visibility and privacy protections, and includes telemetry infrastructure in the energy/carbon boundary."
+      ],
+      "files": []
+    },
+    {
+      "id": 24,
+      "name": "design-actionable-sustainability-alerts",
+      "prompt": "[auto] We want alerts for a greener service, but paging on every carbon-forecast change creates noise. User-facing latency/error alerts must remain. Propose which sustainability and data-quality signals should page, create a ticket or appear on a dashboard, with ownership and actions. We have no justified universal carbon threshold.",
+      "expected_output": "Actionable, low-noise alerting separated from trend reporting and intact user-impact monitoring.",
+      "expectations": [
+        "[auto] Reserves urgent paging for actionable conditions needing timely intervention, distinguishing them from carbon trends and routine optimization opportunities.",
+        "[auto] Preserves user-impact monitoring of latency/errors and considers traffic/saturation or equivalent service-health evidence.",
+        "[auto] Separately monitors signal freshness/provider failure, deadline risk and runaway work, giving owners and response actions rather than only dashboard names.",
+        "[auto] Does not invent a universal gCO2e threshold or claim that removing reliability alerts is a valid sustainability optimization."
+      ],
+      "files": []
+    },
+    {
+      "id": 25,
+      "name": "bound-training-experiment-footprint",
+      "prompt": "[auto] Plan a sustainable model-development experiment for a task where pre-trained models may work. Options include a baseline model, adapter fine-tuning and full training; the team proposes a broad hyperparameter sweep. Include data preparation, failed trials, evaluation, checkpoints and stopping criteria. No accuracy or energy results exist yet.",
+      "expected_output": "A staged experiment with quality-qualified comparisons, bounded exploration and an inclusive training/development assessment boundary.",
+      "expectations": [
+        "[auto] Evaluates reusing a suitable pre-trained baseline or limited fine-tuning before assuming full training is necessary, considering task/data suitability.",
+        "[auto] Defines quality and resource stopping criteria and bounds search/sweeps rather than treating unlimited trials as free.",
+        "[auto] Includes preprocessing, failed/aborted trials, evaluation and checkpoint/storage work when defining the experiment footprint.",
+        "[auto] Does not guarantee adapter tuning or transfer learning meets accuracy targets or achieves a fixed emissions multiplier without evidence."
+      ],
+      "files": []
+    },
+    {
+      "id": 26,
+      "name": "evaluate-quantization-quality-retries",
+      "prompt": "[auto] A quantized inference model has a lower estimated energy cost per call, but may produce more wrong answers that trigger retries or human correction. Define an evaluation and rollout plan before adopting it. Compare total work per successful outcome, not just model size or a single call. No measured results are supplied.",
+      "expected_output": "A quality- and outcome-based quantization evaluation that accounts for retries, correction and safe rollout.",
+      "expectations": [
+        "[auto] Pairs quantization with task-representative accuracy/quality and latency checks rather than recommending it from parameter size alone.",
+        "[auto] Includes retry/fallback and correction work in energy or modeled-emissions comparisons per accepted successful outcome.",
+        "[auto] Defines acceptance/rollback criteria and preserves quality targets rather than accepting degraded results solely for lower per-call cost.",
+        "[auto] Separates measured data from estimates and does not quote a universal quantization energy or carbon reduction."
+      ],
+      "files": []
+    },
+    {
+      "id": 27,
+      "name": "route-models-by-task-quality",
+      "prompt": "[auto] An agent uses one frontier model for classification, extraction and difficult synthesis. Design a model-routing evaluation that can use rules or small models for easy work while keeping quality for hard cases. Include uncertain routing, escalation costs and how to avoid repeated full-plan execution.",
+      "expected_output": "Quality-qualified staged routing with uncertainty handling and measured end-to-end work, not universal smallest-model use.",
+      "expectations": [
+        "[auto] Separates subtask difficulty and considers rules or smaller models for simple classification/extraction while retaining an appropriate route for complex synthesis.",
+        "[auto] Evaluates router errors and defines bounded escalation or fallback rather than blindly trusting the cheap route.",
+        "[auto] Measures total task work including routing, retries and escalation, and avoids restarting successful plan steps unnecessarily.",
+        "[auto] Does not claim smallest-model-first always preserves quality or guarantees a fixed energy multiplier."
+      ],
+      "files": []
+    },
+    {
+      "id": 28,
+      "name": "scope-response-cache-correctness",
+      "prompt": "[auto] We want exact and semantic caches for an LLM assistant. Prompts can be identical across tenants but permissions, retrieved documents and content freshness differ. Some tools change state. Explain cache keys, isolation, expiry and verification without assuming embedding similarity makes answers interchangeable.",
+      "expected_output": "Correctness- and authorization-scoped cache design with explicit freshness, semantic risks and overhead.",
+      "expectations": [
+        "[auto] Keys or scopes exact reuse to relevant model/parameters, tenant/authorization and input/context versions rather than prompt text alone.",
+        "[auto] Treats semantic similarity as a candidate requiring correctness and permission validation, not proof that cached answers are interchangeable.",
+        "[auto] Defines freshness/invalidation and excludes unsafe reuse of side-effecting operations; does not share private answers across tenants.",
+        "[auto] Includes cache lookup, embedding, storage/write and miss overhead when assessing net benefit instead of equating hit rate directly with carbon reduction."
+      ],
+      "files": []
+    },
+    {
+      "id": 29,
+      "name": "distinguish-provider-prefix-response-caching",
+      "prompt": "[auto] Explain provider prompt/prefix caching versus caching completed LLM responses. We resend stable instructions and tool schemas with changing user content. How should we structure context and verify cache behavior? Avoid fixed thresholds or TTLs unless verified for the chosen provider/model; no provider has been selected.",
+      "expected_output": "Provider-aware cache distinctions, stable-prefix layout and observable hit verification without unsupported universal semantics.",
+      "expectations": [
+        "[auto] Distinguishes provider reuse of input/prefix computation from application reuse of a completed answer; a prefix hit still allows new inference/output.",
+        "[auto] Places eligible stable context before dynamic content and notes exact-prefix, model/tool/configuration and provider-specific eligibility constraints.",
+        "[auto] Requires usage evidence for actual hits and verifies provider/model TTL, retention and privacy behavior instead of assuming a hit or universal cache settings.",
+        "[auto] Does not convert cached-input billing discounts directly into measured energy or carbon savings or claim provider caching requires no compliance review."
+      ],
+      "files": []
+    },
+    {
+      "id": 30,
+      "name": "bound-retrieval-reranking-work",
+      "prompt": "[auto] A RAG pipeline sends every retrieval candidate to an expensive reranker and places all returned documents into context. Design a more efficient approach while preserving recall, relevance, tenant permissions and evidence needed for a correct answer. No recall benchmark exists.",
+      "expected_output": "Bounded staged retrieval and context selection with quality/authorization checks and no unsupported pruning guarantee.",
+      "expectations": [
+        "[auto] Proposes a cheaper recall stage and bounded candidate set before expensive reranking, with workload-evaluated rather than arbitrary universal cutoffs.",
+        "[auto] Preserves authorization/tenant filters and evaluates recall/relevance before pruning documents needed for the answer.",
+        "[auto] Selects useful context within a budget and accounts for embedding, indexing, reranking and refreshed-data work rather than only output tokens.",
+        "[auto] Does not guarantee a fixed candidate-reduction percentage or claim shorter prompts prove lower total system emissions without evidence."
+      ],
+      "files": []
+    },
+    {
+      "id": 31,
+      "name": "validate-structured-output-once",
+      "prompt": "[auto] We repeatedly ask an LLM to reformat extraction results until they parse as JSON. Propose an efficient structured-output design with schema and domain validation, bounded repairs and clear failure. Valid JSON can still contain incorrect business data, and permanent API errors must not loop.",
+      "expected_output": "Structured output with semantic validation, bounded classified repair and explicit failure instead of unbounded negotiation.",
+      "expectations": [
+        "[auto] Uses an explicit output schema or supported structured-output mechanism rather than unlimited free-form reformatting turns.",
+        "[auto] Separates JSON/schema validity from factual/domain correctness and defines validation for both.",
+        "[auto] Caps repair/retry attempts, classifies errors and propagates permanent or exhausted failures instead of returning an empty success-shaped value.",
+        "[auto] Accounts for repair and validation work per accepted result and does not claim every schema-valid answer is correct or cost-free."
+      ],
+      "files": []
+    },
+    {
+      "id": 32,
+      "name": "parallelize-only-independent-agent-steps",
+      "prompt": "[auto] Our agent separately fetches two independent reference documents, then computes a decision and performs a state-changing update based on it. Which steps can be batched or parallelized safely? Discuss rate limits, dependency ordering, cancellation and failure propagation without equating lower wall time with lower energy.",
+      "expected_output": "Dependency-aware bounded parallel execution preserving the decision-before-update relationship and side-effect safety.",
+      "expectations": [
+        "[auto] Identifies independent reads as candidates for bounded parallel execution while preserving the dependent decision and state-changing update order.",
+        "[auto] Accounts for rate limits, resource/concurrency budgets and failure/cancellation behavior instead of launching unbounded work.",
+        "[auto] Does not duplicate or speculatively execute the side-effecting update to improve latency.",
+        "[auto] Distinguishes wall-clock speed from total calls/work and requires resource evidence for an energy/carbon claim."
+      ],
+      "files": []
+    },
+    {
+      "id": 33,
+      "name": "design-edge-power-quality-modes",
+      "prompt": "[auto] We are considering moving sensor inference from cloud to battery-powered edge devices. Privacy and latency favor local processing, but battery life, thermal limits and device replacement matter. Design a simple evaluation of performance, balanced and power-saving modes, preserving critical real-time results.",
+      "expected_output": "End-to-end edge evaluation including energy, latency, quality and device lifecycle rather than only avoided cloud work.",
+      "expectations": [
+        "[auto] Includes avoided transit/cloud work and added client compute/battery impact within the stated comparison boundary.",
+        "[auto] Evaluates quality, latency and power/thermal behavior for named modes before choosing a policy rather than exposing uncalibrated performance knobs.",
+        "[auto] Limits deferral or throttling to tasks that tolerate it and preserves critical real-time constraints.",
+        "[auto] Considers device/battery lifecycle and embodied implications without treating shifted client emissions as eliminated emissions or inventing savings."
+      ],
+      "files": []
+    },
+    {
+      "id": 34,
+      "name": "prioritize-contextual-web-efficiency",
+      "prompt": "[auto] Design improvements for a public image-heavy page with an above-the-fold hero, a below-the-fold gallery, heavy main-thread processing and static content. Compare it with a ten-user internal admin tool. Explain responsive formats, lazy loading, work placement and SSR/SSG choices without adding complexity merely to fill a green checklist.",
+      "expected_output": "Targeted web recommendations preserving critical rendering and distinguishing high-traffic static pages from low-traffic tools.",
+      "expectations": [
+        "[auto] Prioritizes appropriately sized/modern images and defers noncritical offscreen media without indiscriminately lazy-loading the visible hero.",
+        "[auto] Addresses heavy main-thread work through suitable scheduling or worker/server placement with explicit overhead and correctness considerations.",
+        "[auto] Compares SSR/SSG/caching for the public static workload against simpler options for the small admin tool instead of forcing SSR everywhere.",
+        "[auto] Considers bundling versus unused parse/execution work and gives workload-grounded source-linked recommendations without invented carbon percentages."
+      ],
+      "files": []
+    },
+    {
+      "id": 35,
+      "name": "separate-intensity-total-rebound",
+      "prompt": "[auto] A service's measured carbon per correctly completed request went down, but total traffic grew enough that total emissions went up. Marketing wants to call this an absolute emissions reduction and count retries as extra useful requests. Explain what can be claimed and how to define the denominator fairly.",
+      "expected_output": "A distinction between intensity improvement and absolute emissions, with a stable useful-work denominator and no credit for waste.",
+      "expectations": [
+        "[auto] Distinguishes lower per-unit intensity from an absolute reduction and does not label rising total emissions as falling total emissions.",
+        "[auto] Keeps the functional unit tied to correctly completed useful requests rather than inflating R with failed retries or redundant work.",
+        "[auto] Includes demand/volume and workload-quality changes when comparing periods and reports both total and per-unit results.",
+        "[auto] Treats growth or rebound as a separate observed effect, not evidence that the original per-unit measurement is necessarily false."
+      ],
+      "files": []
+    },
+    {
+      "id": 36,
+      "name": "qualify-explorer-impact-assumptions",
+      "prompt": "[auto] A teammate wants to use this repository's agentic impact explorer output in an official carbon report. The teaching calculator uses E*I+M per agent run, assumed PUE=1.2, assumed water intensity=1.8 L/kWh, tier-level energy/cost inputs and amortized hardware assumptions. It excludes training, network, client devices and some cache/storage overhead. Assess what its output can support and what must change for a defensible workload assessment. Do not treat those assumptions as measured facts.",
+      "expected_output": "An assessment of an illustrative simulator, separating carbon, water, price and boundary assumptions from measured or standards-compliant reporting.",
+      "expectations": [
+        "[auto] Treats the explorer as an educational estimate rather than a runtime measurement, certified report or source of universal per-token energy constants.",
+        "[auto] States the per-agent-run functional unit and distinguishes operational E*I from allocated M and scaled totals.",
+        "[auto] Identifies missing training/network/client/cache/storage contributions as boundary disclosures requiring materiality/evidence review, not automatically negligible sources.",
+        "[auto] Separates water estimates from carbon SCI, treats 1.2 PUE and 1.8 L/kWh as assumptions, and does not infer measured water savings or energy from model pricing.",
+        "[auto] Requests workload-specific measurements or justified models, transparent allocation and sensitivity/uncertainty analysis before formal claims."
+      ],
+      "files": []
+    },
+    {
+      "id": 37,
+      "name": "handle-unavailable-pattern-source",
+      "prompt": "[auto] You are advising on model-size optimization, but the referenced GSF page https://patterns.greensoftware.foundation/architecture/compress-ml-models-for-inference returns 404 in this session. Browsing is now unavailable. Give appropriately qualified advice and explain how to handle the citation. Do not invent a replacement URL or claim you verified a page you could not open.",
+      "expected_output": "Honest source availability handling, catalog-index fallback and qualified engineering guidance without invented canonical provenance.",
+      "expectations": [
+        "[auto] Explicitly discloses the unavailable pattern page and does not present it as successfully verified.",
+        "[auto] Uses the known catalog index https://patterns.greensoftware.foundation/ as a discovery fallback and notes that the specific pattern may have moved or been renamed.",
+        "[auto] Separates general model-size/quality evaluation advice from claims actually verified online and does not invent a canonical replacement slug.",
+        "[auto] Does not repeat unverified numeric energy reductions or claim browsing occurred despite its stated unavailability."
+      ],
+      "files": []
+    },
+    {
+      "id": 38,
+      "name": "keep-unit-test-scaffolding-scoped",
+      "prompt": "[auto] Scaffold two JavaScript unit tests for this pure function only: const double = x => x * 2; cover double(3) and double(0). Do not review energy usage, change the function or add infrastructure. Show the tests; do not execute them.",
+      "expected_output": "Only focused unit-test scaffolding for the requested function, without unsolicited green review or architectural changes.",
+      "expectations": [
+        "[auto] Produces tests checking double(3) equals 6 and double(0) equals 0 in a clearly identified JavaScript test style.",
+        "[auto] Leaves the function and requested scope unchanged and does not add caching, concurrency, cloud services or environmental instrumentation.",
+        "[auto] Does not add Green Notes, sustainability claims or an unsolicited efficiency review to this excluded test-scaffolding task.",
+        "[auto] Does not execute the supplied function or tests or install dependencies."
+      ],
+      "files": []
+    },
+    {
+      "id": 39,
+      "name": "report-ai-boundary-missing-measurements",
+      "prompt": "[auto] We integrate a third-party model into an assistant that also retrieves data, calls tools, stores artifacts, runs integration tests and emits monitoring data. Our supplier reports a per-token estimate, while users buy a completed workflow outcome. Propose a lifecycle measurement boundary and disclosure plan, including development and retirement. Explain what we cannot calculate from the supplier estimate alone.",
+      "expected_output": "A consumer-oriented whole-system boundary with consistent outcome units, separate provider evidence and explicit missing-data disclosures.",
+      "expectations": [
+        "[auto] Includes material orchestration, retrieval/tool connectors, artifacts/storage, monitoring, integration/development work and relevant client/network contributions instead of equating the API estimate with the whole system.",
+        "[auto] Defines a completed quality-qualified workflow functional unit and does not sum per-token and per-workflow intensities without an explicit conversion/allocation.",
+        "[auto] Separates supplier/provider model-development evidence from the integrating system's consumer boundary and avoids double-counting overlapping contributions.",
+        "[auto] Addresses retirement/decommissioning and justified materiality exclusions, identifying missing measurements and uncertainty instead of manufacturing a complete SCI or certification claim."
+      ],
+      "files": []
+    },
+    {
+      "id": 40,
+      "name": "retire-resources-with-data-safety",
+      "prompt": "[auto] A feature is being retired. There may be idle compute, DNS routes, storage versions, indexes, caches, credentials, model checkpoints and monitoring dependencies left behind. Design a sustainability-aware retirement checklist with evidence of completion. Keep legal retention, recovery and dependent services safe; do not run deletion commands.",
+      "expected_output": "An owned, dependency-aware retirement plan with protected-data handling, actual resource-release verification and a disclosed retirement footprint.",
+      "expectations": [
+        "[auto] Inventories ownership and dependencies across compute, network/routing, stored artifacts, caches and monitoring rather than treating removal of application code as complete retirement.",
+        "[auto] Checks retention/legal holds, recovery and dependent consumers before any data or resource deletion, using reviewed staged actions.",
+        "[auto] Verifies actual resource release and remaining provisioned/storage obligations while preserving necessary evidence and access-control cleanup.",
+        "[auto] Includes material retirement work in the lifecycle assessment, does not claim embodied emissions disappear when a resource is deleted and does not execute destructive commands."
+      ],
+      "files": []
+    }
+  ]
+}

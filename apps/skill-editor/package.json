@@ -1,0 +1,73 @@
+{
+  "name": "skill-editor",
+  "displayName": "Skill Editor",
+  "description": "Safely author skill evals.json cases in an accessible visual editor.",
+  "version": "0.1.0",
+  "publisher": "gsf-reference-implementations",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wherka-ama/reference-implementations.git",
+    "directory": "apps/skill-editor"
+  },
+  "engines": { "vscode": "^1.96.0" },
+  "categories": ["Other"],
+  "type": "module",
+  "main": "./dist/extension.cjs",
+  "capabilities": {
+    "untrustedWorkspaces": { "supported": true },
+    "virtualWorkspaces": true
+  },
+  "contributes": {
+    "customEditors": [{
+      "viewType": "gsf.skillEditor.evals",
+      "displayName": "Skill Evals Editor",
+      "selector": [{ "filenamePattern": "**/evals.json" }],
+      "priority": "option"
+    }],
+    "commands": [{
+      "command": "skillEditor.open",
+      "title": "Open Evals Editor",
+      "category": "Skill Editor"
+    }],
+    "menus": {
+      "editor/title": [{
+        "command": "skillEditor.open",
+        "when": "resourceFilename == evals.json",
+        "group": "navigation"
+      }],
+      "explorer/context": [{
+        "command": "skillEditor.open",
+        "when": "resourceFilename == evals.json",
+        "group": "open"
+      }]
+    }
+  },
+  "scripts": {
+    "build": "npm run check && node esbuild.mjs",
+    "check": "tsc --noEmit",
+    "test": "node --test tests/model.test.ts",
+    "test:ui": "npm run build && node --test tests/ui.test.ts",
+    "test:extension": "npm run build && node tests/run-extension.mjs",
+    "vscode:prepublish": "npm run build",
+    "package": "vsce package --out skill-editor.vsix"
+  },
+  "dependencies": {
+    "jsonc-parser": "^3.3.1"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
+    "@types/node": "^22.0.0",
+    "@types/vscode": "~1.96.0",
+    "@vscode/test-electron": "^2.5.2",
+    "@vscode/vsce": "^4.1.0",
+    "esbuild": "^0.25.0",
+    "playwright": "^1.56.0",
+    "typescript": "latest"
+  },
+  "overrides": {
+    "@vscode/vsce": {
+      "minimatch": "^11.0.1"
+    }
+  }
+}
